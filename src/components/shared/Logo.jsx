@@ -1,7 +1,11 @@
+import Link from "next/link";
+
 export default function Logo() {
   return (
-    <h1 className="text-2xl font-bold text-orange-500">
-      RecipeHub
-    </h1>
+    <Link href="/">
+      <h1 className="text-3xl font-bold text-orange-500">
+        RecipeHub
+      </h1>
+    </Link>
   );
 }

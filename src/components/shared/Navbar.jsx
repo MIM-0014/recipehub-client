@@ -1,22 +1,31 @@
 import Link from "next/link";
-import Logo from "./Logo";
 import Container from "./Container";
+import Logo from "./Logo";
 
 export default function Navbar() {
   return (
-    <nav className="border-b">
+    <header className="sticky top-0 z-50 border-b bg-white/90 backdrop-blur">
       <Container>
-        <div className="flex h-16 items-center justify-between">
+        <nav className="flex h-16 items-center justify-between">
           <Logo />
 
-          <div className="flex gap-6">
+          <div className="flex items-center gap-6 font-medium">
             <Link href="/">Home</Link>
-            <Link href="/browse-recipes">Browse Recipes</Link>
-            <Link href="/login">Login</Link>
-            <Link href="/register">Register</Link>
+
+            <Link href="/browse-recipes">
+              Browse Recipes
+            </Link>
+
+            <Link href="/login">
+              Login
+            </Link>
+
+            <Link href="/register">
+              Register
+            </Link>
           </div>
-        </div>
+        </nav>
       </Container>
-    </nav>
+    </header>
   );
 }
