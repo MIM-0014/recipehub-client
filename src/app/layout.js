@@ -1,5 +1,9 @@
 import "./globals.css";
+
 import AuthProvider from "@/providers/AuthProvider";
+
+import Navbar from "@/components/shared/Navbar";
+import Footer from "@/components/shared/Footer";
 
 export const metadata = {
   title: "RecipeHub",
@@ -10,9 +14,19 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body>
+
         <AuthProvider>
-          {children}
+
+          <Navbar />
+
+          <main className="min-h-screen">
+            {children}
+          </main>
+
+          <Footer />
+
         </AuthProvider>
+
       </body>
     </html>
   );

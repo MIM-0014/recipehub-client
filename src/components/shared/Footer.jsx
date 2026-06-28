@@ -1,18 +1,56 @@
-import Container from "./Container";
+import Link from "next/link";
 import Logo from "./Logo";
 
 export default function Footer() {
   return (
-    <footer className="border-t bg-gray-50">
-      <Container>
-        <div className="flex flex-col items-center justify-between gap-6 py-10 md:flex-row">
-          <Logo />
+    <footer className="border-t mt-20">
+      <div className="max-w-7xl mx-auto px-5 py-10">
 
-          <p className="text-gray-500">
-            © 2026 RecipeHub. All rights reserved.
-          </p>
+        <div className="flex flex-col md:flex-row justify-between gap-10">
+
+          <div>
+            <Logo />
+
+            <p className="mt-4 text-gray-500">
+              Discover, Share and Enjoy Delicious Recipes.
+            </p>
+          </div>
+
+          <div>
+            <h3 className="font-bold mb-3">
+              Quick Links
+            </h3>
+
+            <div className="flex flex-col gap-2">
+              <Link href="/">Home</Link>
+
+              <Link href="/browse-recipes">
+                Browse Recipes
+              </Link>
+
+              <Link href="/dashboard">
+                Dashboard
+              </Link>
+            </div>
+          </div>
+
+          <div>
+            <h3 className="font-bold mb-3">
+              Contact
+            </h3>
+
+            <p>Email: support@recipehub.com</p>
+
+            <p>Dhaka, Bangladesh</p>
+          </div>
+
         </div>
-      </Container>
+
+        <div className="text-center mt-10 text-sm text-gray-500">
+          © {new Date().getFullYear()} RecipeHub. All Rights Reserved.
+        </div>
+
+      </div>
     </footer>
   );
 }

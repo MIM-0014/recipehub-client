@@ -1,5 +1,6 @@
 "use client";
 
+import { createContext, useEffect, useState } from "react";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
@@ -11,6 +12,7 @@ import {
 } from "firebase/auth";
 
 import { auth } from "@/lib/firebase.config";
+import api from "@/services/api";
 
 export const AuthContext = createContext(null);
 
@@ -27,10 +29,10 @@ export default function AuthProvider({ children }) {
   };
 
   // Login
-const login = (email, password) => {
-  setLoading(true);
-  return signInWithEmailAndPassword(auth, email, password);
-};
+  const login = (email, password) => {
+    setLoading(true);
+    return signInWithEmailAndPassword(auth, email, password);
+  };
 
   // Update Profile
   const updateUserProfile = (name, photo) => {
@@ -39,7 +41,6 @@ const login = (email, password) => {
       photoURL: photo,
     });
   };
- 
 
   // Google Login
   const googleLogin = () => {
@@ -48,17 +49,40 @@ const login = (email, password) => {
   };
 
   // Logout
-  const logout = () => {
-    return signOut(auth);
-  };
+  const logout = async () => {
+  setLoading(true);
 
+  try {
+    await fetch("http://localhost:5000/api/auth/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+
+    return await signOut(auth);
+  } finally {
+    setLoading(false);
+  }
+};
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
+
+      if (currentUser) {
+        const token = await currentUser.getIdToken();
+
+        try {
+          await api.post("/auth/jwt", {
+            token,
+          });
+        } catch (err) {
+          console.log(err);
+        }
+      }
+
       setLoading(false);
     });
 
-    return unsubscribe;
+    return () => unsubscribe();
   }, []);
 
   const authInfo = {

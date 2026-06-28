@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "@/hooks/useAuth";
 
+
 export default function RegisterPage() {
   const router = useRouter();
 
