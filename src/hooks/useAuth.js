@@ -3,8 +3,6 @@
 import { useContext } from "react";
 import { AuthContext } from "@/providers/AuthProvider";
 
-const useAuth = () => {
+export default function useAuth() {
   return useContext(AuthContext);
-};
-
-export default useAuth;
+}
