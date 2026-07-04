@@ -5,7 +5,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "@/hooks/useAuth";
-
+import { saveUser } from "@/services/userApi";
+import { auth } from "@/lib/firebase.config";
+import toast from "react-hot-toast";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -40,29 +42,51 @@ export default function RegisterPage() {
 
 await updateUserProfile(name, photo);
 
-const token = await result.user.getIdToken();
+// Refresh the current user so displayName/photoURL are updated
+await result.user.reload();
+
+const updatedUser = auth.currentUser;
+
+const token = await updatedUser.getIdToken();
 
 console.log("Firebase Token:", token);
 
-alert("Registration Successful!");
+await saveUser({
+  name: updatedUser.displayName,
+  email: updatedUser.email,
+  image: updatedUser.photoURL,
+});
+toast.success("Registration Successful!");
 
 router.push("/");
+
     } catch (err) {
       setError(err.message);
     }
   };
+  
 
-  const handleGoogleLogin = async () => {
-    try {
-      await googleLogin();
+ const handleGoogleLogin = async () => {
+  try {
+    const result = await googleLogin();
 
-      alert("Google Login Successful!");
+    const token = await result.user.getIdToken();
 
-      router.push("/");
-    } catch (err) {
-      setError(err.message);
-    }
-  };
+    console.log("Firebase Token:", token);
+
+    await saveUser({
+      name: result.user.displayName,
+      email: result.user.email,
+      image: result.user.photoURL,
+    });
+
+    toast.success("Google Login Successful!");
+
+    router.push("/");
+  } catch (err) {
+    setError(err.message);
+  }
+};
 
   return (
     <section className="min-h-screen flex items-center justify-center bg-gray-100 px-5 py-10">

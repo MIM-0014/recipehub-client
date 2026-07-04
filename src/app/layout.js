@@ -4,6 +4,8 @@ import AuthProvider from "@/providers/AuthProvider";
 
 import Navbar from "@/components/shared/Navbar";
 import Footer from "@/components/shared/Footer";
+import { Toaster } from "react-hot-toast";
+
 
 export const metadata = {
   title: "RecipeHub",
@@ -13,6 +15,7 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      
       <body>
 
         <AuthProvider>
@@ -26,7 +29,7 @@ export default function RootLayout({ children }) {
           <Footer />
 
         </AuthProvider>
-
+ <Toaster position="top-right" />
       </body>
     </html>
   );

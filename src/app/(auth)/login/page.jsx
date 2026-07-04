@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import useAuth from "@/hooks/useAuth";
+import { saveUser } from "@/services/userApi";
+import toast from "react-hot-toast"; 
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,12 +28,17 @@ export default function LoginPage() {
     try {
       const result = await login(email, password);
 
-      const token = await result.user.getIdToken();
+     const token = await result.user.getIdToken();
 
-      console.log("Firebase Token:", token);
+console.log("Firebase Token:", token);
 
-      alert("Login Successful!");
+await saveUser({
+  name: result.user.displayName,
+  email: result.user.email,
+  photo: result.user.photoURL,
+});
 
+toast.success("Login Successful!");
       router.push("/");
     } catch (err) {
       setError(err.message);
@@ -44,9 +51,15 @@ export default function LoginPage() {
 
       const token = await result.user.getIdToken();
 
-      console.log("Firebase Token:", token);
+console.log("Firebase Token:", token);
 
-      alert("Google Login Successful!");
+await saveUser({
+  name: result.user.displayName,
+  email: result.user.email,
+  photo: result.user.photoURL,
+});
+
+alert("Google Login Successful!");
 
       router.push("/");
     } catch (err) {

@@ -1,61 +1,40 @@
-import Image from "next/image";
 import Link from "next/link";
-import { Clock3, Heart, ChefHat } from "lucide-react";
 
 export default function RecipeCard({ recipe }) {
   return (
-    <div className="group overflow-hidden rounded-3xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-2xl">
-      <div className="relative h-60 overflow-hidden">
-        <Image
-          src={recipe.recipeImage}
-          alt={recipe.recipeName}
-          fill
-          className="object-cover transition duration-500 group-hover:scale-110"
-        />
+    <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300">
+      <img
+        src={recipe.recipeImage}
+        alt={recipe.recipeName}
+        className="w-full h-56 object-cover"
+      />
 
-        <span className="absolute left-4 top-4 rounded-full bg-orange-500 px-3 py-1 text-sm font-semibold text-white">
+      <div className="p-5">
+        <span className="inline-block bg-orange-100 text-orange-600 text-sm px-3 py-1 rounded-full mb-3">
           {recipe.category}
         </span>
-      </div>
 
-      <div className="space-y-4 p-6">
-        <h2 className="text-2xl font-bold">
+        <h2 className="text-xl font-bold mb-3">
           {recipe.recipeName}
         </h2>
 
-        <p className="text-gray-500">
-          {recipe.cuisineType} Cuisine
-        </p>
+        <div className="space-y-1 text-sm text-gray-600 dark:text-gray-300 mb-5">
+          <p>
+            <strong>Cuisine:</strong> {recipe.cuisineType}
+          </p>
 
-        <div className="flex items-center justify-between text-sm text-gray-500">
-          <div className="flex items-center gap-2">
-            <Clock3 size={18} />
-            {recipe.preparationTime} mins
-          </div>
+          <p>
+            <strong>Difficulty:</strong> {recipe.difficultyLevel}
+          </p>
 
-          <div className="flex items-center gap-2">
-            <Heart
-              size={18}
-              className="text-red-500"
-            />
-            {recipe.likes}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between">
-          <span className="flex items-center gap-2 text-sm">
-            <ChefHat size={18} />
-            {recipe.author}
-          </span>
-
-          <span className="rounded-full bg-gray-100 px-3 py-1 text-sm">
-            {recipe.difficulty}
-          </span>
+          <p>
+            ❤️ {recipe.likesCount} Likes
+          </p>
         </div>
 
         <Link
-          href={`/recipe/${recipe.id}`}
-          className="block rounded-xl bg-orange-500 py-3 text-center font-semibold text-white transition hover:bg-orange-600"
+          href={`/recipes/${recipe._id}`}
+          className="block text-center bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl transition"
         >
           View Details
         </Link>

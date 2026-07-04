@@ -13,28 +13,46 @@ import {
 
 import { auth } from "@/lib/firebase.config";
 import api from "@/services/api";
-
+import {
+  saveUser,
+  getCurrentUser,
+} from "@/services/userApi";
 export const AuthContext = createContext(null);
 
 const googleProvider = new GoogleAuthProvider();
 
 export default function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
+  const [currentUser, setCurrentUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // ===========================
   // Register
+  // ===========================
   const createUser = (email, password) => {
     setLoading(true);
     return createUserWithEmailAndPassword(auth, email, password);
   };
 
+  // ===========================
   // Login
+  // ===========================
   const login = (email, password) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // Update Profile
+  // ===========================
+  // Google Login
+  // ===========================
+  const googleLogin = () => {
+    setLoading(true);
+    return signInWithPopup(auth, googleProvider);
+  };
+
+  // ===========================
+  // Update Firebase Profile
+  // ===========================
   const updateUserProfile = (name, photo) => {
     return updateProfile(auth.currentUser, {
       displayName: name,
@@ -42,57 +60,95 @@ export default function AuthProvider({ children }) {
     });
   };
 
-  // Google Login
-  const googleLogin = () => {
-    setLoading(true);
-    return signInWithPopup(auth, googleProvider);
-  };
-
+  // ===========================
   // Logout
-  const logout = async () => {
+  // ===========================
+const logout = async () => {
+  console.log("1️⃣ Logout clicked");
+
   setLoading(true);
 
   try {
-    await fetch("http://localhost:5000/api/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });
+    console.log("2️⃣ Sending request");
 
-    return await signOut(auth);
+    const res = await api.post("/auth/logout");
+
+    console.log("3️⃣ Server response:", res.data);
+
+    await signOut(auth);
+
+    console.log("4️⃣ Firebase signed out");
+
+    setUser(null);
+    setCurrentUser(null);
+  } catch (error) {
+    console.log("❌ Logout Error:", error);
   } finally {
     setLoading(false);
   }
 };
+  // ===========================
+  // Get Current User From Database
+  // ===========================
+  const refreshCurrentUser = async () => {
+  try {
+    const data = await getCurrentUser();
+    setCurrentUser(data);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+  
+
+  // ===========================
+  // Firebase Auth Observer
+  // ===========================
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
+    const unsubscribe = onAuthStateChanged(
+      auth,
+      async (currentFirebaseUser) => {
+        setUser(currentFirebaseUser);
 
-      if (currentUser) {
-        const token = await currentUser.getIdToken();
+        if (currentFirebaseUser) {
+          try {
+            const token =
+              await currentFirebaseUser.getIdToken();
 
-        try {
-          await api.post("/auth/jwt", {
-            token,
-          });
-        } catch (err) {
-          console.log(err);
+            await api.post("/auth/jwt", {
+              token,
+            });
+
+            await refreshCurrentUser(
+              currentFirebaseUser.email
+            );
+          } catch (error) {
+            console.log(error);
+          }
+        } else {
+          setCurrentUser(null);
         }
-      }
 
-      setLoading(false);
-    });
+        setLoading(false);
+      }
+    );
 
     return () => unsubscribe();
   }, []);
 
+  // ===========================
+  // Context Values
+  // ===========================
   const authInfo = {
   user,
+  currentUser,
   loading,
   createUser,
   login,
   updateUserProfile,
   googleLogin,
   logout,
+  refreshCurrentUser,
 };
 
   return (

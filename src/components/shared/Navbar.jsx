@@ -14,16 +14,20 @@ import ThemeToggle from "./ThemeToggle";
 import Container from "./Container";
 
 import useAuth from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const { user, logout } = useAuth();
-
+const router = useRouter();
   const [open, setOpen] = useState(false);
 
   const handleLogout = async () => {
   try {
     await logout();
     setOpen(false);
+
+    router.push("/");
+    router.refresh();
   } catch (error) {
     console.error(error);
   }
