@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-
+import toast from "react-hot-toast";
+import StatsCard from "@/components/dashboard/StatsCard";
 
 import useAuth from "@/hooks/useAuth";
 import { getDashboardStats } from "@/services/recipeApi";
@@ -19,7 +20,10 @@ export default function DashboardPage() {
         const data = await getDashboardStats(user.email);
         setStats(data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        toast.error("Failed to load dashboard stats");
+        // Set default stats so page doesn't stay in loading state
+        setStats({ totalRecipes: 0, totalLikes: 0, favorites: 0, isPremium: false });
       }
     }
 
@@ -37,51 +41,61 @@ export default function DashboardPage() {
   return (
     <div>
       <div className="max-w-7xl mx-auto px-5 py-10">
-        <h1 className="text-4xl font-bold mb-10">
-          Dashboard Overview
-        </h1>
+        
+      
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white shadow rounded-xl p-6 text-center">
-            <h2 className="text-gray-500">
-              Total Recipes
-            </h2>
+        <div className="mb-10">
 
-            <p className="text-5xl font-bold mt-3">
-              🍲 {stats.totalRecipes}
-            </p>
-          </div>
+  <h1 className="text-4xl font-bold">
+    Dashboard Overview
+  </h1>
 
-          <div className="bg-white shadow rounded-xl p-6 text-center">
-            <h2 className="text-gray-500">
-              Total Likes
-            </h2>
+  <p className="text-gray-500 mt-2">
+    Track your recipes, favorites, likes, and membership status.
+  </p>
 
-            <p className="text-5xl font-bold mt-3">
-              ❤️ {stats.totalLikes}
-            </p>
-          </div>
+</div>
 
-          <div className="bg-white shadow rounded-xl p-6 text-center">
-            <h2 className="text-gray-500">
-              Favorites
-            </h2>
+       <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6">
 
-            <p className="text-5xl font-bold mt-3">
-              ⭐ {stats.favorites}
-            </p>
-          </div>
+  <StatsCard
+    title="Total Recipes"
+    value={stats.totalRecipes}
+    icon="🍳"
+    color="bg-orange-100"
+    subtitle="Recipes you've shared"
+  />
 
-          <div className="bg-white shadow rounded-xl p-6 text-center">
-            <h2 className="text-gray-500">
-              Premium
-            </h2>
+  <StatsCard
+    title="Total Likes"
+    value={stats.totalLikes}
+    icon="❤️"
+    color="bg-red-100"
+    subtitle="Received from users"
+  />
 
-            <p className="text-3xl font-bold mt-5">
-              {stats.isPremium ? "👑 Yes" : "❌ No"}
-            </p>
-          </div>
-        </div>
+  <StatsCard
+    title="Favorites"
+    value={stats.favorites}
+    icon="⭐"
+    color="bg-yellow-100"
+    subtitle="Saved recipes"
+  />
+
+  <StatsCard
+    title="Membership"
+    value={stats.isPremium ? "Premium" : "Free"}
+    icon={stats.isPremium ? "👑" : "🔓"}
+    color={stats.isPremium ? "bg-purple-100" : "bg-gray-100"}
+    subtitle={
+      stats.isPremium
+        ? "Unlimited access"
+        : "Upgrade anytime"
+    }
+  />
+ 
+
+</div>
       </div>
     </div>
   );

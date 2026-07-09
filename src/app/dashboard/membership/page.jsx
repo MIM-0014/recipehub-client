@@ -1,29 +1,53 @@
 "use client";
 
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+
 import PrivateRoute from "@/components/auth/PrivateRoute";
 import useAuth from "@/hooks/useAuth";
-import { useEffect, useState } from "react";
 import { getDashboardStats } from "@/services/recipeApi";
+import { createCheckoutSession } from "@/services/userApi";
 
 export default function MembershipPage() {
   const { user } = useAuth();
 
   const [stats, setStats] = useState(null);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (!user?.email) return;
 
-    async function loadData() {
+    const loadData = async () => {
       try {
         const data = await getDashboardStats(user.email);
         setStats(data);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        toast.error("Failed to load membership information.");
       }
-    }
+    };
 
     loadData();
   }, [user]);
+
+  const handleUpgrade = async () => {
+    try {
+      setLoading(true);
+
+      const data = await createCheckoutSession();
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error("Failed to start Stripe Checkout.");
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error("Payment initialization failed.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   if (!stats) {
     return (
@@ -60,20 +84,23 @@ export default function MembershipPage() {
           <div className="grid md:grid-cols-2 gap-6 mb-10">
 
             <div className="bg-orange-50 rounded-xl p-6">
+
               <h3 className="text-xl font-bold mb-4">
                 Premium Benefits
               </h3>
 
               <ul className="space-y-3">
+                <li>✅ Unlimited Recipe Uploads</li>
                 <li>✅ Unlimited Favorites</li>
-                <li>✅ Purchase Premium Recipes</li>
-                <li>✅ Exclusive Recipes</li>
+                <li>✅ Buy Premium Recipes</li>
+                <li>✅ Exclusive Premium Recipes</li>
                 <li>✅ Early Access to New Features</li>
                 <li>✅ Priority Support</li>
               </ul>
+
             </div>
 
-            <div className="bg-gray-50 rounded-xl p-6">
+            <div className="bg-gray-50 rounded-xl p-6 text-center">
 
               <h3 className="text-xl font-bold mb-4">
                 Membership Price
@@ -100,14 +127,11 @@ export default function MembershipPage() {
             </button>
           ) : (
             <button
+              onClick={handleUpgrade}
+              disabled={loading}
               className="btn btn-warning w-full"
-              onClick={() =>
-                alert(
-                  "Payment integration will be added later."
-                )
-              }
             >
-              Upgrade Now
+              {loading ? "Redirecting..." : "Upgrade Now"}
             </button>
           )}
 

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
+import Swal from "sweetalert2";
 import {
   getAllUsers,
   updateUserRole,
@@ -29,12 +29,23 @@ export default function ManageUsersPage() {
     loadUsers();
   }, []);
 
-  const handleRole = async (email, role) => {
+  const handleRole = async (email, currentRole) => {
+    const newRole =
+      currentRole === "admin" ? "user" : "admin";
+
+    const result = await Swal.fire({
+      title: "Change Role?",
+      text: `${email} will become ${newRole}.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonText: "Yes",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
-      await updateUserRole(email, role);
-
+      await updateUserRole(email, newRole);
       toast.success("Role Updated");
-
       loadUsers();
     } catch (error) {
       console.log(error);
@@ -42,12 +53,19 @@ export default function ManageUsersPage() {
     }
   };
 
-  const handleBlock = async (email, status) => {
+  const handleBlock = async (email, blocked) => {
+    const result = await Swal.fire({
+      title: blocked ? "Unblock User?" : "Block User?",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Confirm",
+    });
+
+    if (!result.isConfirmed) return;
+
     try {
-      await updateBlockStatus(email, status);
-
+      await updateBlockStatus(email, !blocked);
       toast.success("User Updated");
-
       loadUsers();
     } catch (error) {
       console.log(error);
@@ -57,8 +75,8 @@ export default function ManageUsersPage() {
 
   if (loading) {
     return (
-      <div className="text-center py-20">
-        Loading...
+      <div className="flex justify-center py-20">
+        <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
@@ -70,18 +88,21 @@ export default function ManageUsersPage() {
         👥 Manage Users
       </h1>
 
-      <div className="overflow-x-auto bg-white rounded-xl shadow">
+      <div className="overflow-x-auto bg-white rounded-2xl shadow">
 
         <table className="table">
 
           <thead>
 
             <tr>
+
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Premium</th>
               <th>Status</th>
               <th>Actions</th>
+
             </tr>
 
           </thead>
@@ -90,9 +111,9 @@ export default function ManageUsersPage() {
 
             {users.map((user) => (
 
-              <tr key={user._id}>
+              <tr key={user.email}>
 
-                <td>{user.name}</td>
+                <td>{user.name || "Unknown"}</td>
 
                 <td>{user.email}</td>
 
@@ -101,8 +122,8 @@ export default function ManageUsersPage() {
                   <span
                     className={`badge ${
                       user.role === "admin"
-                        ? "badge-error"
-                        : "badge-primary"
+                        ? "badge-success"
+                        : "badge-ghost"
                     }`}
                   >
                     {user.role}
@@ -112,8 +133,22 @@ export default function ManageUsersPage() {
 
                 <td>
 
-                  {user.isBlocked ? (
+                  {user.isPremium ? (
                     <span className="badge badge-warning">
+                      Premium
+                    </span>
+                  ) : (
+                    <span className="badge">
+                      Free
+                    </span>
+                  )}
+
+                </td>
+
+                <td>
+
+                  {user.isBlocked ? (
+                    <span className="badge badge-error">
                       Blocked
                     </span>
                   ) : (
@@ -124,47 +159,41 @@ export default function ManageUsersPage() {
 
                 </td>
 
-                <td className="space-x-2">
+                <td>
 
-                  {user.role === "admin" ? (
-                    <button
-                      onClick={() =>
-                        handleRole(user.email, "user")
-                      }
-                      className="btn btn-sm btn-outline"
-                    >
-                      Remove Admin
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() =>
-                        handleRole(user.email, "admin")
-                      }
-                      className="btn btn-sm btn-primary"
-                    >
-                      Make Admin
-                    </button>
-                  )}
+                  <div className="flex gap-2">
 
-                  {user.isBlocked ? (
                     <button
                       onClick={() =>
-                        handleBlock(user.email, false)
+                        handleRole(
+                          user.email,
+                          user.role
+                        )
                       }
-                      className="btn btn-sm btn-success"
+                      className="btn btn-warning btn-sm"
                     >
-                      Unblock
+                      Change Role
                     </button>
-                  ) : (
+
                     <button
                       onClick={() =>
-                        handleBlock(user.email, true)
+                        handleBlock(
+                          user.email,
+                          user.isBlocked
+                        )
                       }
-                      className="btn btn-sm btn-error"
+                      className={`btn btn-sm ${
+                        user.isBlocked
+                          ? "btn-success"
+                          : "btn-error"
+                      }`}
                     >
-                      Block
+                      {user.isBlocked
+                        ? "Unblock"
+                        : "Block"}
                     </button>
-                  )}
+
+                  </div>
 
                 </td>
 

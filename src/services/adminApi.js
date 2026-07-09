@@ -2,13 +2,13 @@ import api from "./api";
 
 // Get all users
 export const getAllUsers = async () => {
-  const res = await api.get("/api/admin/users");
+  const res = await api.get("/admin/users");
   return res.data;
 };
 
 // Update role
 export const updateUserRole = async (email, role) => {
-  const res = await api.patch(`/api/admin/users/role/${email}`, {
+  const res = await api.patch(`/admin/users/role/${email}`, {
     role,
   });
 
@@ -67,13 +67,17 @@ export const getAdminStats = async () => {
   const res = await api.get("/admin/stats");
   return res.data;
 };
-// Block / Unblock
-export const updateBlockStatus = async (
-  email,
-  isBlocked
-) => {
+export const featureRecipe = async (id) => {
   const res = await api.patch(
-    `/api/admin/users/block/${email}`,
+    `/admin/recipes/feature/${id}`
+  );
+
+  return res.data;
+};
+// Block / Unblock
+export const updateBlockStatus = async (email, isBlocked) => {
+  const res = await api.patch(
+    `/admin/users/block/${email}`,
     {
       isBlocked,
     }

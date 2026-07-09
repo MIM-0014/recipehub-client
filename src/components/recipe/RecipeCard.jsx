@@ -1,6 +1,11 @@
 import Link from "next/link";
 
 export default function RecipeCard({ recipe }) {
+  
+
+  console.log(recipe);
+
+
   return (
     <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-md overflow-hidden hover:shadow-xl transition duration-300">
       <img

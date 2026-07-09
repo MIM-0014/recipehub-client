@@ -43,9 +43,7 @@ export default function WhyChoose() {
     <section className="py-24 bg-orange-50">
       <Container>
         <div className="text-center mb-14">
-          <p className="text-orange-500 font-semibold">
-            Why RecipeHub?
-          </p>
+          
 
           <h2 className="text-4xl font-bold mt-3">
             Why Choose RecipeHub

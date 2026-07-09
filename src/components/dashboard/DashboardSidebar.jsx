@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import {
-  FaHome,
   FaArrowLeft,
   FaTachometerAlt,
   FaUtensils,
@@ -10,41 +9,32 @@ import {
   FaHeart,
   FaShoppingCart,
   FaUser,
+  FaShieldAlt,
+  FaMoneyCheckAlt,
+  FaUsers,
+  FaClipboardList,
 } from "react-icons/fa";
-
 
 import ActiveLink from "@/components/shared/ActiveLink";
 import useAuth from "@/hooks/useAuth";
-import { FaShieldAlt } from "react-icons/fa";
 
 export default function DashboardSidebar() {
-const { user, currentUser } = useAuth();
-console.log("Sidebar currentUser:", currentUser);
-
-
-console.log("Firebase User:", user);
-console.log("Mongo User:", currentUser);
-console.log("Sidebar currentUser:", currentUser);
+  const { user, currentUser } = useAuth();
 
   return (
-    <aside className="w-72 min-h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 shadow-sm p-6 sticky top-0">
+    <aside className="w-80 min-h-screen bg-white border-r border-gray-200 shadow-sm flex flex-col p-6">
 
       {/* Logo */}
-      <div className="mb-10">
+      <div className="mb-8">
         <h1 className="text-3xl font-bold text-orange-500">
           RecipeHub
         </h1>
-
-        <p className="text-sm text-gray-500">
-          User Dashboard
-        </p>
+      
       </div>
 
       {/* User Info */}
-      <div className="mb-10">
-
+      <div className="mb-8">
         <div className="flex items-center gap-3">
-
           {user?.photoURL ? (
             <img
               src={user.photoURL}
@@ -56,98 +46,115 @@ console.log("Sidebar currentUser:", currentUser);
               {user?.displayName?.charAt(0)?.toUpperCase() || "U"}
             </div>
           )}
-
           <div>
-            <h2 className="font-semibold">
+            <h2 className="font-semibold text-sm">
               {user?.displayName || "User"}
             </h2>
-
-            <p className="text-sm text-gray-500 break-all">
+            <p className="text-xs text-gray-500 break-all">
               {user?.email}
             </p>
           </div>
-
         </div>
-
       </div>
 
       {/* Menu */}
-      <nav className="flex flex-col gap-2">
+      <nav className="flex-1">
 
-        <ActiveLink
-          href="/dashboard"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-100 dark:hover:bg-gray-800 transition"
-        >
-          <FaTachometerAlt />
-          Dashboard
-        </ActiveLink>
+        <p className="text-xs uppercase tracking-widest text-gray-400 px-3 mb-3">
+          Main
+        </p>
+
+        <div className="flex flex-col gap-2 mb-8">
+
+          <ActiveLink
+            href="/dashboard"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"
+          >
+            <FaTachometerAlt />
+            Dashboard
+          </ActiveLink>
+
+          <ActiveLink
+            href="/dashboard/my-recipes"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"
+          >
+            <FaUtensils />
+            My Recipes
+          </ActiveLink>
+
+          <ActiveLink
+            href="/dashboard/add-recipe"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"
+          >
+            <FaPlusCircle />
+            Add Recipe
+          </ActiveLink>
+
+          <ActiveLink
+            href="/dashboard/favorites"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"
+          >
+            <FaHeart />
+            Favorites
+          </ActiveLink>
+
+          <ActiveLink
+            href="/dashboard/purchased-recipes"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"
+          >
+            <FaShoppingCart />
+            Purchased Recipes
+          </ActiveLink>
+
+          <ActiveLink
+            href="/dashboard/profile"
+            className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"
+          >
+            <FaUser />
+            Profile
+          </ActiveLink>
+
+        </div>
 
         {currentUser?.role === "admin" && (
-  <ActiveLink
-    href="/dashboard/admin"
-    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-100 transition"
-  >
-    <FaShieldAlt />
-    Admin Panel
-  </ActiveLink>
-)}
+          <>
+            <p className="text-xs uppercase tracking-widest text-gray-400 px-3 mb-3">
+              Admin
+            </p>
 
-        <ActiveLink
-          href="/dashboard/my-recipes"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-100 dark:hover:bg-gray-800 transition"
-        >
-          <FaUtensils />
-          My Recipes
-        </ActiveLink>
+            <div className="flex flex-col gap-2">
 
-        <ActiveLink
-          href="/dashboard/add-recipe"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-100 dark:hover:bg-gray-800 transition"
-        >
-          <FaPlusCircle />
-          Add Recipe
-        </ActiveLink>
+              <ActiveLink
+                href="/dashboard/admin"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"
+              >
+                <FaShieldAlt />
+                Admin Panel
+              </ActiveLink>
 
-        <ActiveLink
-          href="/dashboard/favorites"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-100 dark:hover:bg-gray-800 transition"
-        >
-          <FaHeart />
-          Favorites
-        </ActiveLink>
+              
+             
 
-        <ActiveLink
-          href="/dashboard/purchased-recipes"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-100 dark:hover:bg-gray-800 transition"
-        >
-          <FaShoppingCart />
-          Purchased Recipes
-        </ActiveLink>
+              <ActiveLink
+                href="/dashboard/admin/transactions"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-50 hover:text-orange-600 transition"
+              >
+                <FaMoneyCheckAlt />
+                Transactions
+              </ActiveLink>
 
-        <ActiveLink
-          href="/dashboard/profile"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-100 dark:hover:bg-gray-800 transition"
-        >
-          <FaUser />
-          Profile
-        </ActiveLink>
-        {currentUser?.role === "admin" && (
-  <ActiveLink
-    href="/dashboard/admin"
-    className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-orange-100 transition"
-  >
-    👑 Admin Panel
-  </ActiveLink>
-)}
+            </div>
+          </>
+        )}
 
       </nav>
 
       {/* Bottom */}
-      <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-700">
+      <div className="border-t pt-6">
 
         <Link
           href="/"
-          className="flex items-center gap-3 text-gray-600 dark:text-gray-300 hover:text-orange-500 transition"
+          className="flex items-center gap-3 text-gray-600 hover:text-orange-600 transition"
         >
           <FaArrowLeft />
           Back to Home

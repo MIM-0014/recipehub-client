@@ -2,6 +2,7 @@
 
 import Container from "../shared/Container";
 import FeaturedRecipeCard from "./FeaturedRecipeCard";
+import { motion } from "framer-motion";
 
 const featuredRecipes = [
   {
@@ -41,9 +42,7 @@ export default function FeaturedRecipes() {
     <section className="bg-gray-50 py-24">
       <Container>
         <div className="mb-14 text-center">
-          <p className="font-semibold text-orange-500">
-            Featured Collection
-          </p>
+         
 
           <h2 className="mt-3 text-4xl font-bold">
             Featured Recipes

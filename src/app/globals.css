@@ -13,3 +13,11 @@ font-family:Arial,Helvetica,sans-serif;
 background:#111827;
 color:white;
 }
+html.dark {
+  color-scheme: dark;
+}
+
+html.dark body {
+  background: #111827;
+  color: #f9fafb;
+}

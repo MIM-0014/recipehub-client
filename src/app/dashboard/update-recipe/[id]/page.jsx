@@ -56,7 +56,8 @@ export default function UpdateRecipePage() {
 
       router.push("/dashboard/my-recipes");
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error(error.message || "Failed to update recipe");
     }
   };
 

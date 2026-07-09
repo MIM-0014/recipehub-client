@@ -1,34 +1,53 @@
-const BASE_URL = "http://localhost:5000/api";
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://127.0.0.1:5000"
+).replace(/\/$/, "");
+const BASE_URL = `${API_BASE_URL}/api`;
+
+async function requestJson(url, options = {}) {
+  try {
+    const res = await fetch(url, {
+      cache: "no-store",
+      ...options,
+    });
+
+    const contentType = res.headers.get("content-type") || "";
+    const isJson = contentType.includes("application/json");
+    const data = isJson ? await res.json() : await res.text();
+
+    if (!res.ok) {
+      const message =
+        (typeof data === "object" && data && data.message) ||
+        (typeof data === "string" && data) ||
+        "Request failed";
+
+      throw new Error(message);
+    }
+
+    return data;
+  } catch (error) {
+    console.error(`API request failed for ${url}`, error);
+    throw error;
+  }
+}
 
 // Get All Recipes
 export async function getRecipes() {
-  const res = await fetch(`${BASE_URL}/recipes`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch recipes");
-  }
-
-  return res.json();
+  return requestJson(`${BASE_URL}/recipes`);
 }
 
 // Get Single Recipe
 export async function getRecipe(id) {
-  const res = await fetch(`${BASE_URL}/recipes/${id}`, {
-    cache: "no-store",
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch recipe");
+  try {
+    return await requestJson(`${BASE_URL}/recipes/${id}`);
+  } catch (error) {
+    console.warn("Recipe fetch failed, returning null.", error);
+    return null;
   }
-
-  return res.json();
 }
 
 // Add Recipe
 export async function addRecipe(recipe) {
-  const res = await fetch(`${BASE_URL}/recipes`, {
+  return requestJson(`${BASE_URL}/recipes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -36,32 +55,18 @@ export async function addRecipe(recipe) {
     credentials: "include",
     body: JSON.stringify(recipe),
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to add recipe");
-  }
-
-  return res.json();
 }
 
 // Get My Recipes
 export async function getMyRecipes() {
-  const res = await fetch(
-    `${BASE_URL}/recipes/my-recipes`, {
-    cache: "no-store",
+  return requestJson(`${BASE_URL}/recipes/my-recipes`, {
     credentials: "include",
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch recipes");
-  }
-
-  return res.json();
 }
 
 // Update Recipe
 export async function updateRecipe(id, recipe) {
-  const res = await fetch(`${BASE_URL}/recipes/${id}`, {
+  return requestJson(`${BASE_URL}/recipes/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -69,61 +74,34 @@ export async function updateRecipe(id, recipe) {
     credentials: "include",
     body: JSON.stringify(recipe),
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to update recipe");
-  }
-
-  return res.json();
 }
 
 // Like Recipe
 export async function likeRecipe(id) {
-  const res = await fetch(`${BASE_URL}/recipes/${id}/like`, {
+  return requestJson(`${BASE_URL}/recipes/${id}/like`, {
     method: "PATCH",
     credentials: "include",
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to like recipe");
-  }
-
-  return res.json();
 }
 
 // Delete Recipe
 export async function deleteRecipe(id) {
-  const res = await fetch(`${BASE_URL}/recipes/${id}`, {
+  return requestJson(`${BASE_URL}/recipes/${id}`, {
     method: "DELETE",
     credentials: "include",
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to delete recipe");
-  }
-
-  return res.json();
 }
+
 // Dashboard Stats
 export async function getDashboardStats(email) {
-  const res = await fetch(
-    `${BASE_URL}/dashboard/stats/${email}`,
-    {
-      cache: "no-store",
-      credentials: "include",
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch dashboard stats");
-  }
-
-  return res.json();
+  return requestJson(`${BASE_URL}/dashboard/stats/${email}`, {
+    credentials: "include",
+  });
 }
 
 // Add Favorite
 export async function addFavorite(favorite) {
-  const res = await fetch(`${BASE_URL}/favorites`, {
+  return requestJson(`${BASE_URL}/favorites`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -131,40 +109,19 @@ export async function addFavorite(favorite) {
     credentials: "include",
     body: JSON.stringify(favorite),
   });
-
-  const data = await res.json();
-
-  if (!res.ok) {
-    throw new Error(data.message || "Failed to add favorite");
-  }
-
-  return data;
 }
 
 // Get Favorites
 export async function getFavorites() {
-  const res = await fetch(`${BASE_URL}/favorites`, {
-    cache: "no-store",
+  return requestJson(`${BASE_URL}/favorites`, {
     credentials: "include",
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch favorites");
-  }
-
-  return res.json();
 }
 
 // Delete Favorite
 export async function deleteFavorite(id) {
-  const res = await fetch(`${BASE_URL}/favorites/${id}`, {
+  return requestJson(`${BASE_URL}/favorites/${id}`, {
     method: "DELETE",
     credentials: "include",
   });
-
-  if (!res.ok) {
-    throw new Error("Failed to delete favorite");
-  }
-
-  return res.json();
 }

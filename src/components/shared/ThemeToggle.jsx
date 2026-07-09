@@ -1,13 +1,32 @@
 "use client";
 
-import { FiMoon } from "react-icons/fi";
+import { useEffect, useState } from "react";
+import { useTheme } from "next-themes";
+import { FaMoon, FaSun } from "react-icons/fa";
 
 export default function ThemeToggle() {
+  const { theme, resolvedTheme, setTheme } = useTheme();
+
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <button
-      className="w-10 h-10 rounded-full border hover:bg-orange-50 transition flex items-center justify-center"
+      onClick={() =>
+        setTheme(resolvedTheme === "dark" ? "light" : "dark")
+      }
+      className="btn btn-circle btn-ghost"
     >
-      <FiMoon size={18} />
+      {resolvedTheme === "dark" ? (
+        <FaSun size={18} />
+      ) : (
+        <FaMoon size={18} />
+      )}
     </button>
   );
 }

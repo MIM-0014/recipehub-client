@@ -44,3 +44,21 @@ export async function upgradeToPremium() {
 
   return res.json();
 }
+// ===============================
+// Create Stripe Checkout Session
+// ===============================
+export async function createCheckoutSession() {
+  const res = await fetch(
+    "http://localhost:5000/api/premium/create-checkout-session",
+    {
+      method: "POST",
+      credentials: "include",
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error("Failed to create checkout session");
+  }
+
+  return res.json();
+}

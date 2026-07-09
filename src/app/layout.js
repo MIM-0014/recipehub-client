@@ -14,9 +14,10 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+   <html lang="en" suppressHydrationWarning>
       
       <body>
+      
 
         <AuthProvider>
 
@@ -29,6 +30,7 @@ export default function RootLayout({ children }) {
           <Footer />
 
         </AuthProvider>
+       
  <Toaster position="top-right" />
       </body>
     </html>

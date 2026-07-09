@@ -10,7 +10,7 @@ export default function ActiveLink({
 }) {
   const pathname = usePathname();
 
-  const active = pathname === href;
+  const active = pathname === href || (href !== "/" && pathname.startsWith(`${href}/`));
 
   return (
     <Link

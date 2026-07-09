@@ -95,7 +95,7 @@ const logout = async () => {
     const data = await getCurrentUser();
     setCurrentUser(data);
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 };
 
@@ -123,7 +123,7 @@ const logout = async () => {
               currentFirebaseUser.email
             );
           } catch (error) {
-            console.log(error);
+            console.error(error);
           }
         } else {
           setCurrentUser(null);

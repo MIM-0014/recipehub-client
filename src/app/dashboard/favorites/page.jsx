@@ -3,8 +3,7 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-
-
+import toast from "react-hot-toast";
 import useAuth from "@/hooks/useAuth";
 
 import {
@@ -24,11 +23,18 @@ export default function FavoritesPage() {
 
     async function loadFavorites() {
       try {
-       const favoriteDocs = await getFavorites();
+        const favoriteDocs = await getFavorites();
 
         const recipes = await Promise.all(
           favoriteDocs.map(async (fav) => {
             const recipe = await getRecipe(fav.recipeId);
+
+            if (!recipe) {
+              console.warn(
+                `Favorite recipe not found for favoriteId=${fav._id} recipeId=${fav.recipeId}`
+              );
+              return null;
+            }
 
             return {
               favoriteId: fav._id,
@@ -37,9 +43,17 @@ export default function FavoritesPage() {
           })
         );
 
-        setFavorites(recipes);
+        const validRecipes = recipes.filter(Boolean);
+        if (validRecipes.length < recipes.length) {
+          toast.error(
+            "Some favorites are no longer available and were skipped."
+          );
+        }
+
+        setFavorites(validRecipes);
       } catch (error) {
-        console.log(error);
+        console.error(error);
+        toast.error("Failed to load favorites");
       } finally {
         setLoading(false);
       }
@@ -49,18 +63,13 @@ export default function FavoritesPage() {
   }, [user]);
 
   const handleRemove = async (favoriteId) => {
-    const confirmDelete = confirm(
-      "Remove this recipe from favorites?"
-    );
-
-    if (!confirmDelete) return;
+    if (!window.confirm("Remove this recipe from favorites?")) return;
 
     try {
       const result = await deleteFavorite(favoriteId);
 
       if (result.deletedCount > 0) {
-        alert("Recipe removed successfully!");
-
+        toast.success("Recipe removed from favorites!");
         setFavorites((prev) =>
           prev.filter(
             (recipe) => recipe.favoriteId !== favoriteId
@@ -68,7 +77,8 @@ export default function FavoritesPage() {
         );
       }
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error(error.message || "Failed to remove favorite");
     }
   };
 

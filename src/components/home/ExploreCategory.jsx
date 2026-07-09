@@ -54,9 +54,7 @@ export default function ExploreCategory() {
     <section className="py-24 bg-white">
       <Container>
         <div className="text-center mb-14">
-          <p className="text-orange-500 font-semibold">
-            Browse Categories
-          </p>
+         
 
           <h2 className="text-4xl font-bold mt-3">
             Explore by Category

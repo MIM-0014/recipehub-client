@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Container from "../shared/Container";
 import PopularRecipeCard from "./PopularRecipeCard";
 
@@ -35,9 +36,7 @@ export default function PopularRecipes() {
     <section className="py-24 bg-white">
       <Container>
         <div className="mb-14 text-center">
-          <p className="font-semibold text-orange-500">
-            Community Favorites
-          </p>
+         
 
           <h2 className="mt-3 text-4xl font-bold">
             Popular Recipes

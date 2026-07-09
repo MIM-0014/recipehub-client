@@ -4,7 +4,9 @@ import { useEffect, useState } from "react";
 import Container from "@/components/shared/Container";
 import RecipeCard from "@/components/recipe/RecipeCard";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+const API_BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL || process.env.API_URL || "http://127.0.0.1:5000"
+).replace(/\/$/, "");
 
 
 const categories = [
@@ -22,18 +24,31 @@ export default function BrowseRecipes() {
   const [totalPages, setTotalPages] = useState(1);
 
   useEffect(() => {
-    let url = `${API_URL}/api/recipes?page=${currentPage}&limit=6`;
+    const fetchRecipes = async () => {
+      try {
+        let url = `${API_BASE_URL}/api/recipes?page=${currentPage}&limit=6`;
 
-    if (selected !== "All") {
-      url += `&categories=${selected}`;
-    }
+        if (selected !== "All") {
+          url += `&categories=${selected}`;
+        }
 
-    fetch(url)
-      .then((res) => res.json())
-      .then((data) => {
-        setRecipes(data.recipes);
-        setTotalPages(data.totalPages);
-      });
+        const res = await fetch(url, { cache: "no-store" });
+
+        if (!res.ok) {
+          throw new Error("Failed to fetch recipes");
+        }
+
+        const data = await res.json();
+        setRecipes(data.recipes || []);
+        setTotalPages(data.totalPages || 1);
+      } catch (error) {
+        console.error("Failed to load recipes", error);
+        setRecipes([]);
+        setTotalPages(1);
+      }
+    };
+
+    fetchRecipes();
   }, [selected, currentPage]);
 
   return (

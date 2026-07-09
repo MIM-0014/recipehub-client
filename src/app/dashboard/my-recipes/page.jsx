@@ -30,7 +30,8 @@ const { user, loading: authLoading } = useAuth();
       const data = await getMyRecipes();
       setRecipes(data);
     } catch (error) {
-      console.log(error);
+      console.error(error);
+      toast.error("Failed to load recipes");
     } finally {
       setLoading(false);
     }
@@ -47,24 +48,20 @@ const { user, loading: authLoading } = useAuth();
   
   // Delete Recipe
 const handleDelete = async (id) => {
-  const confirmDelete = confirm(
-    "Are you sure you want to delete this recipe?"
-  );
-
-  if (!confirmDelete) return;
+  if (!window.confirm("Are you sure you want to delete this recipe?")) return;
 
   try {
     const data = await deleteRecipe(id);
 
     if (data.deletedCount > 0) {
       toast.success("Recipe deleted successfully.");
-
       setRecipes((prev) =>
         prev.filter((recipe) => recipe._id !== id)
       );
     }
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    toast.error(error.message || "Failed to delete recipe");
   }
 };
 

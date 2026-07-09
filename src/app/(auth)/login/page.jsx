@@ -59,7 +59,7 @@ await saveUser({
   photo: result.user.photoURL,
 });
 
-alert("Google Login Successful!");
+toast.success("Google Login Successful!");
 
       router.push("/");
     } catch (err) {

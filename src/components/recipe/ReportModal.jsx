@@ -3,70 +3,81 @@
 import { useState } from "react";
 import toast from "react-hot-toast";
 
+import { addReport } from "@/services/reportApi";
+
 export default function ReportModal({
-  recipeId,
-  closeModal,
+  open,
+  setOpen,
+  recipe,
 }) {
-  const [reason, setReason] = useState("");
+  const [reason, setReason] = useState("Spam");
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  if (!open) return null;
 
-    if (!reason.trim()) {
-      toast.error("Please enter a reason.");
-      return;
+  const handleSubmit = async () => {
+    setLoading(true);
+
+    try {
+     await addReport({
+  recipeId: recipe._id,
+  reason,
+});
+      toast.success("Report submitted");
+
+      setOpen(false);
+    } catch (error) {
+      console.error(error);
+
+      toast.error(
+        error.response?.data?.message ||
+          "Failed to submit report"
+      );
+    } finally {
+      setLoading(false);
     }
-
-    // We will save this in MongoDB later
-    console.log({
-      recipeId,
-      reason,
-    });
-
-    toast.success("Report submitted successfully!");
-
-    closeModal();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-      <div className="bg-white rounded-xl w-full max-w-md p-6 shadow-xl">
+    <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
 
-        <h2 className="text-2xl font-bold mb-5">
-          🚩 Report Recipe
+      <div className="bg-white rounded-xl w-full max-w-md p-8">
+
+        <h2 className="text-2xl font-bold mb-6">
+          Report Recipe
         </h2>
 
-        <form onSubmit={handleSubmit}>
+        <select
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          className="select select-bordered w-full"
+        >
+          <option>Spam</option>
+          <option>Offensive Content</option>
+          <option>Copyright Issue</option>
+        </select>
 
-          <textarea
-            className="textarea textarea-bordered w-full h-36"
-            placeholder="Why are you reporting this recipe?"
-            value={reason}
-            onChange={(e) => setReason(e.target.value)}
-          />
+        <div className="flex justify-end gap-3 mt-8">
 
-          <div className="flex justify-end gap-3 mt-6">
+          <button
+            onClick={() => setOpen(false)}
+            className="btn"
+          >
+            Cancel
+          </button>
 
-            <button
-              type="button"
-              onClick={closeModal}
-              className="btn btn-outline"
-            >
-              Cancel
-            </button>
+          <button
+            onClick={handleSubmit}
+            className="btn btn-error"
+            disabled={loading}
+          >
+            {loading ? "Submitting..." : "Submit"}
+          </button>
 
-            <button
-              type="submit"
-              className="btn btn-error"
-            >
-              Submit Report
-            </button>
-
-          </div>
-
-        </form>
+        </div>
 
       </div>
+
     </div>
   );
 }
